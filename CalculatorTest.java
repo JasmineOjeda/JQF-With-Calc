@@ -16,14 +16,7 @@ class CalculatorTest {
 		calculator.calculateBi(Calculator.BiOperatorModes.normal, 2.0);
 		Assertions.assertEquals(NaN, calculator.calculateBi(Calculator.BiOperatorModes.normal, 3.0));
     }
-	
-	@Test
-	void calculateBiAddTest() {
-		Calculator calculator = new Calculator();
-		calculator.calculateBi(Calculator.BiOperatorModes.add, 3.0);
-		Assertions.assertEquals(5.5, calculator.calculateBi(Calculator.BiOperatorModes.normal, 2.5));
-	}
-	
+
 	@Test
 	void calculateBiMinusTest() {
 		Calculator calculator = new Calculator();
@@ -122,6 +115,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
+import java.util.Random;
 import org.junit.runner.RunWith;
 import com.pholser.junit.quickcheck.*;
 import com.pholser.junit.quickcheck.generator.*;
@@ -130,16 +124,31 @@ import edu.berkeley.cs.jqf.fuzz.*;
 import static java.lang.Double.NaN;
 import java.lang.Math;
 import com.pholser.junit.quickcheck.generator.java.lang.DoubleGenerator;
+import com.pholser.junit.quickcheck.generator.InRange;
 
 //import simplejavacalculator.Calculator;
 
 @RunWith(JQF.class)
 public class CalculatorTest {
+	private static Random ran = new Random();
+
+	@Fuzz
+	public void calculateBiNormalTest(@From(DoubleGenerator.class)double x, @From(DoubleGenerator.class)double y) {
+		double a = x * ran.nextInt();
+		double b = y * ran.nextInt();
+
+		Calculator calculator = new Calculator();
+		calculator.calculateBi(Calculator.BiOperatorModes.normal, a);
+		assertTrue(calculator.calculateBi(Calculator.BiOperatorModes.normal, b).isNaN());
+    }
 
 	@Fuzz
     public void calculateBiAddTest(@From(DoubleGenerator.class)double x, @From(DoubleGenerator.class)double y) {
+		double a = x * ran.nextInt();
+		double b = y * ran.nextInt();
+
 		Calculator calculator = new Calculator();
-		calculator.calculateBi(Calculator.BiOperatorModes.add, x);
-		assertTrue((x + y) == calculator.calculateBi(Calculator.BiOperatorModes.normal, y));
+		calculator.calculateBi(Calculator.BiOperatorModes.add, a);
+		assertTrue((a + b) == calculator.calculateBi(Calculator.BiOperatorModes.normal, b));
 	}
 }
